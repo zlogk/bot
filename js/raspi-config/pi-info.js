@@ -1,10 +1,14 @@
+import TelegramBot from  "node-telegram-bot-api";
+import si from "systeminformation";
+import https from "https";
 export default function PiInfo() {
     // telegram-pi-monitor.js
     // Bot Telegram gửi thông tin nhiệt độ CPU, RAM, ổ đĩa, uptime, IP
 
-    const TelegramBot = require("node-telegram-bot-api");
-    const si = require("systeminformation");
-    const https = require("https");
+    // const TelegramBot = require("node-telegram-bot-api");
+    // const si = require("systeminformation");
+    // const https = require("https");
+
 
     const TOKEN = process.env.BOT_TOKEN || "8328619864:AAEm3LZS45Va5gzQ74EXfTbH9EVNgX8lk2E";
 
