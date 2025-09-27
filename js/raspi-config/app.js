@@ -1,4 +1,4 @@
-import PiInfo from "./pi-info";
+import PiInfo from "./pi-info.js";
 export default function raspiConfigApp() {
     PiInfo();
 
