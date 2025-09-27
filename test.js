@@ -1,6 +1,4 @@
-function add(a,b){
-	return a +b;
+function add(a, b){
+    return a+b;
 }
-console.log(add(12,12));
-
-console.log(add(12,12));
+export {add};
