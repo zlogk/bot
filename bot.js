@@ -93,7 +93,7 @@ bot.onText(/\/start/, (msg) => {
 });
 
 // Lệnh /status
-bot.onText(/\/ss/, async (msg) => {
+bot.onText(/\/s/, async (msg) => {
   const report = await buildStatus();
   bot.sendMessage(msg.chat.id, report);
 });
