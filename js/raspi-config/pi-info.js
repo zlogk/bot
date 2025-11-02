@@ -10,7 +10,7 @@ export default function PiInfo() {
     // const https = require("https");
 
 
-    const TOKEN = process.env.BOT_TOKEN || "8328619864:AAEm3LZS45Va5gzQ74EXfTbH9EVNgX8lk2E";
+    const TOKEN = process.env.BOT_TOKEN;
 
     // Tạo bot (polling mode)
     const bot = new TelegramBot(TOKEN, { polling: true });
