@@ -1,6 +1,9 @@
 import TelegramBot from  "node-telegram-bot-api";
 import si from "systeminformation";
 import https from "https";
+import dotenv from 'dotenv';
+
+dotenv.config();
 export default function PiInfo() {
     // telegram-pi-monitor.js
     // Bot Telegram gửi thông tin nhiệt độ CPU, RAM, ổ đĩa, uptime, IP
