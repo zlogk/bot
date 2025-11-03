@@ -1,1 +1,2 @@
 .env
+udo systemctl daemon-reload
