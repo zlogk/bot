@@ -1,4 +1,5 @@
 .env
 videos
 img
-udo systemctl daemon-reload
+old.db
+
