@@ -4,7 +4,7 @@ import * as query from "./query.js";
 export default class RaspiModel{
     #dbManager;
     constructor(){
-        this.#dbManager = new DatabaseManager('./Model/old.db');
+        this.#dbManager = new DatabaseManager('./old.db');
     }
     async IntializeTable(){
         await this.#dbManager.OpenDatabase();
