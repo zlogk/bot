@@ -1,4 +1,4 @@
 .env
 videos
 img
-'udo systemctl daemon-reload'
+udo systemctl daemon-reload
