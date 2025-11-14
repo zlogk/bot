@@ -38,11 +38,6 @@ export default class RaspiController {
             });
         });
     }
-    auo(){
-        setInterval(() => {
-            
-        }, 500);
-    }
     async GetInfo() {
         try {
             const [cpuTemp, mem, disk, load, uptime, net, publicIp] = await Promise.all([
