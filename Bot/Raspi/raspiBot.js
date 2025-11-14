@@ -15,7 +15,7 @@ export default class RaspiBot {
 
             let mess =
                 "🏴‍☠️ " + cpu[2] +
-                "\nCPU temp: " + cpu[0] +
+                "\nCPU temp: " + cpu[0]+"°C" +
                 " - load: " + cpu[1]+"%" +
                 "\nRam: " + ram[0] + "/" + ram[1] + "(" + ram[2] + "%)" +
                 "\nDisk: " + disk[0] +"/" + disk[1]+ "(" +disk[3] +"%) " +"Free: "+ disk[2]+
