@@ -1,6 +1,5 @@
 .env
-videos
-img
+data
 old.db
 node_modules/
 package-lock.json
