@@ -1,6 +1,6 @@
 {
   "name": "old-bot",
-  "version": "1.17.25",
+  "version": "1.11.25",
   "description": "",
   "main": "bot.js",
   "type": "module",
