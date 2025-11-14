@@ -1,4 +1,8 @@
 {
+  "name": "old-bot",
+  "version": "1.17.25",
+  "description": "",
+  "main": "bot.js",
   "type": "module",
   "dependencies": {
     "dotenv": "^17.2.3",

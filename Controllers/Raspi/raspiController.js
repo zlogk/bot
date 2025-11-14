@@ -38,15 +38,39 @@ export default class RaspiController {
             });
         });
     }
-    async GetCpuInfo() {
-        const [cpuTemp, load] = await Promise.all([
-        si.cpuTemperature(),
-        si.currentLoad()
-        ]);
-        const info = [cpuTemp.main,load.currentLoad.toFixed(1),this.GetTime()];
-        // const db = info.push(this.GetTime());
-        this.#raspiModel.InsertCpu(info);
-        return info;
+    async GetInfo() {
+        try {
+            const [cpuTemp, mem, disk, load, uptime, net, publicIp] = await Promise.all([
+                si.cpuTemperature(),
+                si.mem(),
+                si.fsSize(),
+                si.currentLoad(),
+                si.time(),
+                si.networkInterfaces(),
+                this.GetPublicIp()
+            ]);
+            const cpu_temp = cpuTemp.main ? cpuTemp.main.toFixed(1) : "N/A";
+            const cpu_load = load.currentLoad.toFixed(1);
+
+            const mem_used = this.ConvertBytes(mem.used);
+            const mem_total = this.ConvertBytes(mem.total);
+            const mem_percent_used = ((mem.used/mem.total) * 100).toFixed(1);
+
+            let disk_used;
+            let disk_size;
+            let disk_percent_used;
+            if(disk.length > 0){
+                const primary_disk = disk[0];
+                disk_used = primary_disk.used;
+                disk_size = primary_disk.size;
+                disk_percent_used = primary_disk.use;
+            }
+            const uptime_day = Math.trunc(uptime.uptime()/3600/24);
+            const uptime_odd_hour = (uptime.uptime()/3600/24 - Math.trunc(uptime.uptime()/3600/24))*24
+
+        } catch (err) {
+            return `Lỗi không lấy được thông tin hệ thống: ${err.message}`;
+        }
     }
 
 }
