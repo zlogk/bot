@@ -18,12 +18,12 @@ export default class DatabaseManager {
         try {
             this.#db = await this.#GetDb();
         } catch (err) {
-            console.log(err);
+            console.log("Không thể kết nối database: "+ err);
         }
     }
     async CloseDatabase() {
         await this.#db.close((err) => {
-            console.log(err);
+            console.log("Thông tin đóng database: "+ err);
         });
     }
     #ExecuteQuery(sql) {

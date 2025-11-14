@@ -38,6 +38,11 @@ export default class RaspiController {
             });
         });
     }
+    auo(){
+        setInterval(() => {
+            
+        }, 500);
+    }
     async GetInfo() {
         try {
             const [cpuTemp, mem, disk, load, uptime, net, publicIp] = await Promise.all([
@@ -49,25 +54,44 @@ export default class RaspiController {
                 si.networkInterfaces(),
                 this.GetPublicIp()
             ]);
+            //cpu
             const cpu_temp = cpuTemp.main ? cpuTemp.main.toFixed(1) : "N/A";
             const cpu_load = load.currentLoad.toFixed(1);
-
+            //ram
             const mem_used = this.ConvertBytes(mem.used);
             const mem_total = this.ConvertBytes(mem.total);
-            const mem_percent_used = ((mem.used/mem.total) * 100).toFixed(1);
-
+            const mem_percent_used = ((mem.used / mem.total) * 100).toFixed(1);
+            //disk
             let disk_used;
-            let disk_size;
+            let disk_total;
+            let disk_free;
             let disk_percent_used;
-            if(disk.length > 0){
+            if (disk.length > 0) {
                 const primary_disk = disk[0];
-                disk_used = primary_disk.used;
-                disk_size = primary_disk.size;
+                disk_used = this.ConvertBytes(primary_disk.used);
+                disk_total = this.ConvertBytes(primary_disk.size);
+                disk_free = this.ConvertBytes(primary_disk.size - primary_disk.used);
                 disk_percent_used = primary_disk.use;
             }
-            const uptime_day = Math.trunc(uptime.uptime()/3600/24);
-            const uptime_odd_hour = (uptime.uptime()/3600/24 - Math.trunc(uptime.uptime()/3600/24))*24
+            //uptime
+            const uptime_day = Math.trunc(uptime.uptime / 3600 / 24);
+            const uptime_odd_hour = Math.trunc((uptime.uptime / 3600 / 24 - Math.trunc(uptime.uptime / 3600 / 24)) * 24);
+            const uptime_odd_minute = (((uptime.uptime / 3600 / 24 - Math.trunc(uptime.uptime / 3600 / 24)) * 24
+                - Math.trunc((uptime.uptime / 3600 / 24 - Math.trunc(uptime.uptime / 3600 / 24)) * 24)) * 60).toFixed(0);
+            const up_time = `${uptime_day} days, ${uptime_odd_hour} hours, ${uptime_odd_minute}'`;
+            //ip
+            const lan = net.find((n)=> n.ip4 && !n.internal);
+            const lan2 = lan ? lan.ip4: "N/A";
 
+            const info = [
+                [cpu_temp, cpu_load, this.GetTime()],
+                [mem_used, mem_total, mem_percent_used, this.GetTime()],
+                [disk_used, disk_total,disk_free, disk_percent_used, this.GetTime()],
+                [up_time,this.GetTime()],
+                [lan2,publicIp,this.GetTime()]
+            ];
+            await this.#raspiModel.InsertCpuRamDiskUptime(info);
+            return info;
         } catch (err) {
             return `Lỗi không lấy được thông tin hệ thống: ${err.message}`;
         }

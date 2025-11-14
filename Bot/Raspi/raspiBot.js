@@ -7,22 +7,23 @@ export default class RaspiBot {
         this.#bot = bot;
         this.#RaspiController = new RaspiController();
     }
-    run() {
-        this.#bot.onText(/\/start/, (msg) => {
-            this.#bot.sendMessage(
-                msg.chat.id,
-                "Xin chào! 👋\n" +
-                "Lệnh khả dụng:\n" +
-                "• /status → Xem tình trạng Pi\n" +
-                "• /interval N → Nhận báo cáo mỗi N phút\n" +
-                "• /stop → Dừng báo cáo định kỳ"
-            );
+    Run() {
+        this.#bot.onText(/\/raspi/, async (msg) => {
+            const info = await this.#RaspiController.GetInfo();
+            const [cpu, ram, disk, uptime, ip] = info;
+
+            let mess =
+                "🏴‍☠️ " + cpu[2] +
+                "\nCPU temp: " + cpu[0] +
+                " - load: " + cpu[1]+"%" +
+                "\nRam: " + ram[0] + "/" + ram[1] + "(" + ram[2] + "%)" +
+                "\nDisk: " + disk[0] +"/" + disk[1]+ "(" +disk[3] +"%) " +"Free: "+ disk[2]+
+                "\nUptime: " + uptime[0]+
+                "\nLAN: " + ip[0] +
+                "\nWAN: " + ip[1];
+
+            this.#bot.sendMessage(msg.chat.id, mess);
         });
-        this.#bot.onText(/\/s/, async (msg) => {
-            const cpu = await this.#RaspiController.GetCpuInfo();
-            this.#bot.sendMessage(msg.chat.id,cpu.toString());
-        });
+
     }
-
-
 }
