@@ -9,7 +9,7 @@ export default class RaspiBot {
         this.#RaspiController = new RaspiController();
     }
     async Run() {
-        this.#bot.onText(/\/raspi/, async (msg) => {
+        this.#bot.onText(/\/system/, async (msg) => {
             const info = await this.#RaspiController.GetInfo();
             const [cpu, ram, disk, uptime, ip] = info;
 
