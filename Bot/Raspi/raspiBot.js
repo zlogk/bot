@@ -1,3 +1,4 @@
+import RaspiModel from '../../Model/Raspi/raspiModel.js';
 import RaspiController from '../../Controllers/Raspi/raspiController.js';
 
 export default class RaspiBot {
@@ -7,7 +8,7 @@ export default class RaspiBot {
         this.#bot = bot;
         this.#RaspiController = new RaspiController();
     }
-    Run() {
+    async Run() {
         this.#bot.onText(/\/raspi/, async (msg) => {
             const info = await this.#RaspiController.GetInfo();
             const [cpu, ram, disk, uptime, ip] = info;
@@ -21,8 +22,8 @@ export default class RaspiBot {
                 "\nUptime: " + uptime[0]+
                 "\nLAN: " + ip[0] +
                 "\nWAN: " + ip[1];
-
             this.#bot.sendMessage(msg.chat.id, mess);
+            this.#RaspiController.raspiModel.InsertCpuRamDiskUptime(info);
         });
 
     }

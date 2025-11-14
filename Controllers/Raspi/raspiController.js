@@ -4,10 +4,9 @@ import https from 'https';
 
 
 export default class RaspiController {
-    #raspiModel;
     constructor() {
-        this.#raspiModel = new RaspiModel();
-        this.#raspiModel.IntializeTable();
+        this.raspiModel = new RaspiModel();
+        this.raspiModel.IntializeTable();
     }
 
     ConvertBytes(bytes) {
@@ -85,7 +84,7 @@ export default class RaspiController {
                 [up_time,this.GetTime()],
                 [lan2,publicIp,this.GetTime()]
             ];
-            await this.#raspiModel.InsertCpuRamDiskUptime(info);
+            // await this.#raspiModel.InsertCpuRamDiskUptime(info);
             return info;
         } catch (err) {
             return `Lỗi không lấy được thông tin hệ thống: ${err.message}`;
