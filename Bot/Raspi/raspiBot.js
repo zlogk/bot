@@ -9,6 +9,8 @@ export default class RaspiBot {
         this.#RaspiController = new RaspiController();
     }
     async Run() {
+        const table = await this.#RaspiController.raspiModel.IntializeTable();
+        console.log(table);
         this.#bot.onText(/\/system/, async (msg) => {
             const info = await this.#RaspiController.GetInfo();
             const [cpu, ram, disk, uptime, ip] = info;
@@ -23,7 +25,8 @@ export default class RaspiBot {
                 "\nLAN: " + ip[0] +
                 "\nWAN: " + ip[1];
             this.#bot.sendMessage(msg.chat.id, mess);
-            this.#RaspiController.raspiModel.InsertCpuRamDiskUptime(info);
+            let done = await this.#RaspiController.raspiModel.InsertCpuRamDiskUptime(info);
+            console.log(done);
         });
 
     }

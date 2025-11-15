@@ -6,7 +6,7 @@ import https from 'https';
 export default class RaspiController {
     constructor() {
         this.raspiModel = new RaspiModel();
-        this.raspiModel.IntializeTable();
+        // this.raspiModel.IntializeTable();
     }
 
     ConvertBytes(bytes) {
@@ -74,15 +74,15 @@ export default class RaspiController {
                 - Math.trunc((uptime.uptime / 3600 / 24 - Math.trunc(uptime.uptime / 3600 / 24)) * 24)) * 60).toFixed(0);
             const up_time = `${uptime_day} days, ${uptime_odd_hour} hours, ${uptime_odd_minute}'`;
             //ip
-            const lan = net.find((n)=> n.ip4 && !n.internal);
-            const lan2 = lan ? lan.ip4: "N/A";
+            const lan = net.find((n) => n.ip4 && !n.internal);
+            const lan2 = lan ? lan.ip4 : "N/A";
 
             const info = [
                 [cpu_temp, cpu_load, this.GetTime()],
                 [mem_used, mem_total, mem_percent_used, this.GetTime()],
-                [disk_used, disk_total,disk_free, disk_percent_used, this.GetTime()],
-                [up_time,this.GetTime()],
-                [lan2,publicIp,this.GetTime()]
+                [disk_used, disk_total, disk_free, disk_percent_used, this.GetTime()],
+                [up_time, this.GetTime()],
+                [lan2, publicIp, this.GetTime()]
             ];
             // await this.#raspiModel.InsertCpuRamDiskUptime(info);
             return info;
