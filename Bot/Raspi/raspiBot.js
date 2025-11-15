@@ -1,4 +1,3 @@
-import RaspiModel from '../../Model/Raspi/raspiModel.js';
 import RaspiController from '../../Controllers/Raspi/raspiController.js';
 
 export default class RaspiBot {

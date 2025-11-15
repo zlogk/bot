@@ -1,5 +1,6 @@
 import TelegramBot from "node-telegram-bot-api";
 import RaspiBot from "./Bot/Raspi/raspiBot.js";
+import convertBot from "./Bot/convert-Img/convertBot.js";
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -13,5 +14,7 @@ const Main = () => {
     ]);
     const piInfo = new RaspiBot(bot);
     piInfo.Run();
+    const convertImg = new convertBot(bot);
+    convertImg.Run();
 }
 Main();

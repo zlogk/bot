@@ -17,14 +17,16 @@ export default class DatabaseManager {
     async OpenDatabase() {
         try {
             this.#db = await this.#GetDb();
+            return 'Database open! ';
         } catch (err) {
-            console.log("Không thể kết nối database: " + err);
+            return "Không thể kết nối database: " + err;
         }
     }
     async CloseDatabase() {
         await this.#db.close((err) => {
-            console.log("Thông tin đóng database: " + err);
+            if(err) return "Lỗi đóng database: " + err;
         });
+        return "Database closed! ";
     }
     #ExecuteQuery(sql) {
         return new Promise((res, rej) => {
@@ -38,7 +40,8 @@ export default class DatabaseManager {
     async CreateTable(tableName, name_type_constraints) {
         try {
             const sql = `CREATE TABLE IF NOT EXISTS ${tableName} (${name_type_constraints});`;
-            return await this.#ExecuteQuery(sql);
+            const mess = await this.#ExecuteQuery(sql);
+            return mess;
         } catch (err) {
             return err;
         }
