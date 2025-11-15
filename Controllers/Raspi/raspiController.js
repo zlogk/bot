@@ -52,7 +52,7 @@ export default class RaspiController {
             const cpu_temp = cpuTemp.main ? cpuTemp.main.toFixed(1) : "N/A";
             const cpu_load = load.currentLoad.toFixed(1);
             //ram
-            const mem_used = this.ConvertBytes(mem.used);
+            const mem_used = this.ConvertBytes(mem.total - mem.available);
             const mem_total = this.ConvertBytes(mem.total);
             const mem_percent_used = ((mem.used / mem.total) * 100).toFixed(1);
             //disk
