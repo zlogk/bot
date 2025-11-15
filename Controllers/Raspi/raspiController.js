@@ -54,7 +54,7 @@ export default class RaspiController {
             //ram
             const mem_used = this.ConvertBytes(mem.total - mem.available);
             const mem_total = this.ConvertBytes(mem.total);
-            const mem_percent_used = ((mem.used / mem.total) * 100).toFixed(1);
+            const mem_percent_used = (((mem.total - mem.available) / mem.total) * 100).toFixed(1);
             //disk
             let disk_used;
             let disk_total;
