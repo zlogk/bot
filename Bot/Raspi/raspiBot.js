@@ -21,11 +21,16 @@ export default class RaspiBot {
                 "\nRam: " + ram[0] + "/" + ram[1] + "(" + ram[2] + "%)" +
                 "\nDisk: " + disk[0] +"/" + disk[1]+ "(" +disk[3] +"%) " +"Free: "+ disk[2]+
                 "\nUptime: " + uptime[0]+
-                "\nLAN: " + ip[0] +
-                "\nWAN: " + ip[1];
+                "\nLAN: " + ip[0];
             this.#bot.sendMessage(msg.chat.id, mess);
             let done = await this.#RaspiController.raspiModel.InsertCpuRamDiskUptime(info);
             console.log(done);
+        });
+        this.#bot.onText(/\/wan/, async (msg)=>{
+            const info = await this.#RaspiController.GetInfo();
+            const wan = info[info.length-1];
+            let mess = "WAN: " + wan[1];
+            this.#bot.sendMessage(msg.chat.id, mess);
         });
 
     }
