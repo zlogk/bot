@@ -141,4 +141,14 @@ export default class FileManager {
             if (err) throw new Error("readBinary: (>.<): " + err);
         }
     }
+    //list file of folder
+    static async listFiles(folderPath){
+        try{
+            if(this.ExistsFolder(folderPath)){
+                return await fs.promises.readdir(folderPath);
+            }
+        }catch(err){
+
+        }
+    }
 }

@@ -3,12 +3,14 @@ import FileManager from "../../Model/FileManager.js";
 import axios from "axios";
 import sharp from "sharp";
 import mime from 'mime';
+import rarZipManager from "../../Model/rarZipManager.js";
+import path from "path";
 
 export default class convertController {
     constructor() {
         this.convertModel = new convertModel();
     }
-    async convert(fileLink, inputPath, outputPath) {
+    async convert(chatId, fileLink, inputPath, outputDir) {
         try {
             const response = await axios({
                 url: fileLink,
@@ -17,9 +19,15 @@ export default class convertController {
             });
             const stream = await FileManager.writeStream(inputPath, response.data);
             if (stream.success) {
+                if(path.extname(inputPath).toLocaleLowerCase() === '.zip'){
+                    await rarZipManager.unzip(inputPath,outputDir);
+                }else{
+                    await rarZipManager.unrar(inputPath,outputDir);
+                }
                 FileManager.ensureDir(outputPath);
-                const ph = await sharp(inputPath).png({ "quality": 100 }).toFile(outputPath);
+                await sharp(inputPath).png({ "quality": 100 }).toFile(outputPath);
             }
+
         } catch (err) {
             console.log(err);
         }
@@ -38,5 +46,8 @@ export default class convertController {
         } catch (err) {
             bot.sendMessage(chatId, "Lỗi gửi File");
         }
+    }
+    async sendCompress(bot,chatId, filePath){
+
     }
 }
