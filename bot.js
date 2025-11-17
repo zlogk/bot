@@ -10,7 +10,7 @@ const Main = () => {
     bot.setMyCommands([
         { command: "/system", description: "System" },
         { command: "/png", description: "Chuyển sang định dạng PNG" },
-        { command: "/video", description: "Download video từ Youtube, tiktok,..." }
+        { command: "/video", description: "Download video từ Youtube, Facebook,..." }
     ]);
     const piInfo = new RaspiBot(bot);
     piInfo.Run();

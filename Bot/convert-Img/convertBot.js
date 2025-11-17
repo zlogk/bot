@@ -70,7 +70,7 @@ export default class convertBot {
 
             } catch (err) {
                 console.log(err);
-                this.#bot.sendMessage(chatId, "Có lỗi khi xử lý ảnh ❗")
+                this.#bot.sendMessage(chatId, "Có lỗi khi xử lý ảnh ❗") 
             }
         });
 
