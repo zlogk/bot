@@ -16,7 +16,7 @@ export default class convertBot{
         this.#bot.onText(/\/png/,(msg)=>{
             const chatId = msg.chat.id;
             this.#userStatus[chatId] = "await_png";
-            this.#bot.sendMessage(chatId, "Xin gửi ảnh tôi sẽ chuyển sang định dạng PNG ✔️");
+            this.#bot.sendMessage(chatId, "⚠️ Xin hãy nén tất cả ảnh lại thành file .zip hoặc .rar\n⚠️ 1 ảnh cũng nén lại để đảm bảo tôi nhận file ảnh gốc.");
         });
         this.#bot.on("document", async (msg)=>{
             const chatId = msg.chat.id;
@@ -24,7 +24,7 @@ export default class convertBot{
                 this.#bot.sendMessage(chatId, "Xin hãy dùng lệnh /png trước.");
                 return;
             }
-            this.#bot.sendMessage(chatId, "Đang xử lý xin chờ!");
+            this.#bot.sendMessage(chatId, "Đang chuyển đổi...");
             try{
                 const photos = msg.photo;
                 const fileId = photos[photos.length -1].file_id;

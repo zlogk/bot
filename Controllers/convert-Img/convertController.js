@@ -1,5 +1,5 @@
 import convertModel from "../../Model/convert-Img/convertModel.js";
-import FileManager from "../../Model/FIleManager.js";
+import FileManager from "../../Model/FileManager.js";
 import axios from "axios";
 import sharp from "sharp";
 import mime from 'mime';

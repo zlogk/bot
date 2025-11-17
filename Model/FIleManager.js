@@ -1,10 +1,20 @@
 import fs from 'fs';
 import path from 'path';
+import { pipeline } from 'stream/promises';
 
 export default class FileManager {
     //CHECK FILE EXIST
     static exists(filePath) {
         return fs.existsSync(filePath);
+    }
+    //CHECK FOLDER EXIST
+    static async ExistsFolder(folderPath){
+        try{
+            await fs.promises.access(folderPath);
+            return true;
+        }catch{
+            return false;
+        }
     }
 
     //CREATE DIRECTORY IF NOT EXISTS
@@ -14,7 +24,7 @@ export default class FileManager {
             await fs.promises.mkdir(dir, { recursive: true });
             return dir;
         } catch (err) {
-            if (err.code !== "EEXIST") return "ensureDir: (>.<): " + err;
+            if (err.code !== "EEXIST") throw new Error("ensureDir: " + err);
         }
     }
     //WRITE - READ - APPEND TEXT
@@ -23,20 +33,22 @@ export default class FileManager {
             await this.ensureDir(filePath);
             await fs.promises.writeFile(filePath, content, { encoding: "utf-8" });
         } catch (err) {
-            if (err) return "writeText: (>.<): " + err;
+            if (err) throw new Error("writeText: (>.<): " + err);
         }
     }
 
     static async AppendText(filePath, content) {
         try {
-            if (this.exists(filePath)) {
-                await fs.promises.appendFile(filePath, content);
-                return "Nối text thành công!";
-            } else {
-                return "File không tồn tại!";
-            }
+            // if (this.exists(filePath)) {
+            //     await fs.promises.appendFile(filePath, content);
+            //     return "Nối text thành công!";
+            // } else {
+            //     return "File không tồn tại!";
+            // }
+            if (!this.exists(filePath)) throw new Error("File không tồn tại.");
+            await fs.promises.appendFile(filePath, content);
         } catch (err) {
-            if (err) return "AppendText: (>.<): " + err;
+            if (err) throw new Error("AppendText: (>.<): " + err);
         }
     }
     static async readText(filePath) {
@@ -44,7 +56,7 @@ export default class FileManager {
             if (this.exists(filePath)) {
                 const text = await fs.promises.readFile(filePath, { encoding: "utf-8" }, (err, data) => {
                     if (err) {
-                        return "fs.promises.readFile: (>.<): " + err;
+                        throw new Error("fs.promises.readFile: (>.<): " + err);
                     } else {
                         return data;
                     }
@@ -54,17 +66,16 @@ export default class FileManager {
                 return null;
             }
         } catch (err) {
-            if (err) return "readText: (>.<): " + err;
+            if (err) throw new Error("readText: (>.<): " + err);
         }
     }
     //BINARY (BUFFER)
     static async writeBirary(filePath, buffer) {
         try {
-            let dir = await this.ensureDir(filePath);
+            await this.ensureDir(filePath);
             await fs.promises.writeFile(filePath, buffer);
-            return "Ghi file tại thư muc: " + dir;
         } catch (err) {
-            if (err) return "writeBirary: (>.<): " + err;
+            if (err) throw new Error("writeBirary: (>.<): " + err);
         }
     }
     static async readBinary(filePath) {
@@ -76,34 +87,44 @@ export default class FileManager {
                 return null;
             }
         } catch (err) {
-            if (err) return "readBinary: (>.<): " + err;
+            if (err) throw new Error("readBinary: (>.<): " + err);
         }
     }
     //STREAM
-    static async writeStream(filePath, readAbleStream){
-        await this.ensureDir(filePath);
-        return new Promise((resolve,reject)=>{
-            const ws = fs.createWriteStream(filePath);
-            readAbleStream.pipe(ws);
-            ws.on("finish",()=>{
-                resolve({success: true, path: filePath});
-            });
-            ws.on("error",err => reject(err));
-            readAbleStream.on("error",err => reject(err));
-        });
+    static async writeStream(filePath, readAbleStream) {
+        // await this.ensureDir(filePath);
+        // return new Promise((resolve, reject) => {
+        //     const ws = fs.createWriteStream(filePath);
+        //     readAbleStream.pipe(ws);
+        //     ws.on("finish", () => {
+        //         resolve({ success: true, path: filePath });
+        //     });
+        //     ws.on("error", err => reject(err));
+        //     readAbleStream.on("error", err => reject(err));
+        // });
+        let tempPath = '';
+        try {
+            await this.ensureDir(filePath);
+            tempPath = filePath + '.part';
+            await pipeline(readAbleStream, fs.createWriteStream(tempPath));
+
+            await fs.promises.rename(tempPath, filePath);
+            return { success: true, path: filePath };
+        } catch (err) {
+            if (FileManager.exists(tempPath)) {
+                await fs.promises.unlink(tempPath);
+            }
+            throw err;
+        }
     }
-    // static readStream(filePath){
-    //     if(this.exists(filePath)) return null;
-    //     return fs.createWriteStream(filePath);
-    // }
-    static readStream(filePath){
-        if(!this.exists(filePath)) return null;
-        return new Promise((resolve,reject)=>{
+    static readStream(filePath) {
+        if (!this.exists(filePath)) return null;
+        return new Promise((resolve, reject) => {
             const rs = fs.createReadStream(filePath);
-            rs.on("open",()=>{
-                resolve({ready:true, path:filePath, stream: rs});
+            rs.on("open", () => {
+                resolve({ ready: true, path: filePath, stream: rs });
             })
-            rs.on("error",(err)=> reject(err));
+            rs.on("error", (err) => reject(err));
         })
     }
 
@@ -117,7 +138,7 @@ export default class FileManager {
                 return "File không tồn tại!";
             }
         } catch (err) {
-            if (err) return "readBinary: (>.<): " + err;
+            if (err) throw new Error("readBinary: (>.<): " + err);
         }
     }
 }

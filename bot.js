@@ -10,7 +10,7 @@ const Main = () => {
     bot.setMyCommands([
         { command: "/system", description: "System" },
         { command: "/png", description: "Chuyển sang định dạng PNG" },
-        { command: "/jpg", description: "Chuyển sang định dạng JPG" }
+        { command: "/video", description: "Download video từ Youtube, tiktok,..." }
     ]);
     const piInfo = new RaspiBot(bot);
     piInfo.Run();
@@ -18,4 +18,3 @@ const Main = () => {
     convertImg.Run();
 }
 Main();
-xin chao
