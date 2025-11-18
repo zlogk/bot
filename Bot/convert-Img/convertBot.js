@@ -3,6 +3,7 @@ import path from 'path';
 
 export default class convertBot {
     #bot;
+    #fileFolderPath;
     #userStatus;
     constructor(bot) {
         this.#bot = bot;
@@ -28,7 +29,9 @@ export default class convertBot {
 | ✅**SVG**`;
             this.#userStatus[chatId] = "await_png";
             this.#bot.sendMessage(chatId, mess);
-            this.#bot.sendMessage(chatId, "⚠️ Nếu nhiều ảnh bỏ vào 1 Folder nén lại -> .zip/.rar\n⚠️ 1 ảnh chỉ cần nén ảnh -> .zip/.rar");
+            this.#bot.sendMessage(chatId, "⚠️ Nếu nhiều ảnh bỏ vào 1 Folder nén lại -> .zip/.rar\n" +
+                "⚠️ Tên file nén và tên folder phải giống nhau\n" +
+                "⚠️ 1 ảnh chỉ cần nén ảnh -> .zip/.rar");
         });
 
         this.#bot.on("document", async (msg) => {
@@ -45,33 +48,33 @@ export default class convertBot {
                 //check file user send
                 const ext = path.extname(fileName).toLowerCase();
                 if (ext === '.zip' || ext === '.rar') {
-                    const mess = "⏳ Đang chuyển đổi...\n💾 Bạn muốn nhận file theo dạng nào /rarFile hay /pngFile"
-                    this.#bot.sendMessage(chatId, mess);
+                    const messStart = "⏳ Đang chuyển đổi..."
+                    this.#bot.sendMessage(chatId, messStart);
                     const fileLink = await this.#bot.getFileLink(fileId);
-                    const fileInputPath = `./data/img/${chatId}/source/compress/${Date.now()}_${fileName}`;
+                    const folderInputPath = `./data/img/${chatId}/source/${chatId}_${Date.now()}`;
                     const folderOutputPath = `./data/img/${chatId}/convert/${chatId}_${Date.now()}`;
 
-                    await this.convertController.convert(chatId, fileLink, fileInputPath, folderOutputPath);
-
-                    this.#bot.onText(/\/rarFile/, async (mesg) => {
-                        await this.convertController.sendCompress();
-                        
-                    });
-                    this.#bot.onText(/\/pngFile/, async (mesg) => {
-                        await this.convertController.sendFile(this.#bot, chatId, outputDir);
-
-                        delete this.#userStatus[chatId];
-                    });
-
-
+                    this.#fileFolderPath = await this.convertController.convert(fileName, fileLink, folderInputPath, folderOutputPath);
+                    const messEnd = "💾 Bạn muốn nhận file theo dạng nào /toPNG hay /toZIP"
+                    this.#bot.sendMessage(chatId, messEnd);
                 } else {
                     this.#bot.sendMessage(chatId, "⛔ Xin nén ảnh với định dạng .zip/.rar");
                 }
 
             } catch (err) {
                 console.log(err);
-                this.#bot.sendMessage(chatId, "Có lỗi khi xử lý ảnh ❗") 
+                this.#bot.sendMessage(chatId, "Có lỗi khi xử lý ảnh ❗")
             }
+        });
+        this.#bot.onText(/\/toZip/, async (msg) => {
+            const chatId = msg.chat.id;
+            await this.convertController.sendCompress(this.#bot, chatId, this.#fileFolderPath);
+            delete this.#userStatus[chatId];
+        });
+        this.#bot.onText(/\/toPNG/, async (msg) => {
+            const chatId = msg.chat.id;
+            await this.convertController.sendFile(this.#bot, chatId, this.#fileFolderPath);
+            delete this.#userStatus[chatId];
         });
 
     }

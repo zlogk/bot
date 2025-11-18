@@ -5,49 +5,94 @@ import sharp from "sharp";
 import mime from 'mime';
 import rarZipManager from "../../Model/rarZipManager.js";
 import path from "path";
+import fs from 'fs';
 
 export default class convertController {
     constructor() {
         this.convertModel = new convertModel();
     }
-    async convert(chatId, fileLink, inputPath, outputDir) {
+
+    #checkSupport(fileName) {
+        const support = ['.jpg', '.jpeg', '.webp', '.avif', '.tiff', '.gif', '.heif', '.raw', '.svg'];
+        const fileExt = path.extname(fileName).toLocaleLowerCase();
+        if (support.includes(fileExt)) {
+            return true;
+        }
+        return false;
+    }
+    async convert(fileName, fileLink, folderInputPath, folderOutputPath) {
         try {
             const response = await axios({
                 url: fileLink,
                 method: "GET",
                 responseType: "stream"
             });
-            const stream = await FileManager.writeStream(inputPath, response.data);
+            const fileCompressDownload = folderInputPath + '/' + fileName;
+            const stream = await FileManager.writeStream(fileCompressDownload, response.data);
+            await FileManager.mkDir(folderOutputPath);
             if (stream.success) {
-                if(path.extname(inputPath).toLocaleLowerCase() === '.zip'){
-                    await rarZipManager.unzip(inputPath,outputDir);
-                }else{
-                    await rarZipManager.unrar(inputPath,outputDir);
+                const isFolder = folderInputPath + '/' + FileManager.getNameFileNotExt(fileName);
+                if (path.extname(fileCompressDownload).toLocaleLowerCase() === '.zip') {
+                    await rarZipManager.unzip(fileCompressDownload, folderInputPath);
+                    // let test = await FileManager.checkIsFolderIsFile(isFolder) === 'folder';
+                    if (await FileManager.checkIsFolderIsFile(isFolder) === 'folder') {
+                        const listFile = await FileManager.listOfFolder(isFolder);
+                        const outDir = await FileManager.mkDir(folderOutputPath + '/' + FileManager.getNameFileNotExt(fileName))
+                        listFile.forEach(async (file) => {
+                            if (this.#checkSupport(file)) {
+                                await sharp(isFolder + '/' + file).png({ "quality": 100 }).toFile(outDir + '/' + FileManager.getNameFileNotExt(file) + '.png');
+                            }
+                            // await rarZipManager.zip(folderOutputPath + '/' + FileManager.getNameFileNotExt(fileName), folderOutputPath + '/' + FileManager.getNameFileNotExt(fileName));
+                        });
+                        return { isFolder: true, path: outDir };
+                    } else {
+                        const listFile = await FileManager.listOfFolder(folderInputPath);
+                        const dir = await FileManager.mkDir(folderOutputPath + '/img');
+                        const outFile = dir + '/' + FileManager.getNameFileNotExt(fileName) + '.png';
+                        listFile.forEach(async (file) => {
+                            if (this.#checkSupport(file)) {
+                                await sharp(folderInputPath + '/' + file).png({ "quality": 100 }).toFile(outFile);
+                            }
+                        });
+                        return { isFolder: false, path: outFile };
+                    }
+                } else {
                 }
-                FileManager.ensureDir(outputPath);
-                await sharp(inputPath).png({ "quality": 100 }).toFile(outputPath);
             }
 
         } catch (err) {
             console.log(err);
         }
     }
-    async sendFile(bot, chatId, filePath) {
-        // const contenttype = mime.getType(filePath) || "application/octet-stream";
-        const fileName = filePath.split("/").pop();
-
+    async sendCompress(bot, chatId) {
         try {
-            const fileSendStream = await FileManager.readStream(filePath);
+            const fileSendStream = await FileManager.readStream(folderOutputPath + '/' + FileManager.getNameFileNotExt(fileName));
             const fileOptions = {
                 filename: fileName,
                 caption: `${fileName}`
             };
-            return bot.sendDocument(chatId, fileSendStream.stream,fileOptions);
+            return bot.sendDocument(chatId, fileSendStream.stream, fileOptions);
         } catch (err) {
             bot.sendMessage(chatId, "Lỗi gửi File");
         }
     }
-    async sendCompress(bot,chatId, filePath){
+    async sendFile(bot, chatId, fileFolderPath) {
+        // const contenttype = mime.getType(filePath) || "application/octet-stream";
 
+        const fileName = fileFolderPath.path.split("/").pop();
+        try {
+            if (!fileFolderPath.isFolder) {
+                const fileSendStream = await FileManager.readStream(fileFolderPath.path);
+                const fileOptions = {
+                    filename: fileName,
+                    caption: `${fileName}`
+                };
+                return bot.sendDocument(chatId, fileSendStream.stream, fileOptions);
+            }
+
+        } catch (err) {
+            bot.sendMessage(chatId, "Lỗi gửi File");
+        }
     }
+
 }

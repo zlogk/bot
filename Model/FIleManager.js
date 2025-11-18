@@ -27,6 +27,15 @@ export default class FileManager {
             if (err.code !== "EEXIST") throw new Error("ensureDir: " + err);
         }
     }
+    //CREATE DIRECTORY
+    static async mkDir(folderPath){
+        try{
+            await fs.promises.mkdir(folderPath,{recursive:true});
+            return folderPath;
+        }catch(err){
+            throw err;
+        }
+    }
     //WRITE - READ - APPEND TEXT
     static async writeText(filePath, content) {
         try {
@@ -141,14 +150,34 @@ export default class FileManager {
             if (err) throw new Error("readBinary: (>.<): " + err);
         }
     }
-    //list file of folder
-    static async listFiles(folderPath){
+    //list file-folder of folder
+    static async listOfFolder(folderPath){
         try{
             if(this.ExistsFolder(folderPath)){
                 return await fs.promises.readdir(folderPath);
             }
         }catch(err){
-
+            throw err;
         }
+    }
+    /**
+     * Kiểm tra đường dẫn là file hay folder. nếu là file trả về "file".....
+     * @param {string} path path
+     * @returns {Promise} "file" || "folder" || "other"
+     */
+    static async checkIsFolderIsFile(path){
+        try{
+            const stat = await fs.promises.stat(path);
+            if(stat.isFile()){
+                return 'file'
+            }
+            if(stat.isDirectory()){
+                return 'folder';
+            }
+            return 'other';
+        }catch(err){return false;}
+    }
+    static getNameFileNotExt(name_path){
+        return path.basename(name_path,path.extname(name_path));
     }
 }
