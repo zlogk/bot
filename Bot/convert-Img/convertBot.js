@@ -1,5 +1,6 @@
 import convertController from "../../Controllers/convert-Img/convertController.js";
 import path from 'path';
+import FileManager from "../../Model/FileManager.js";
 
 export default class convertBot {
     #bot;
@@ -55,8 +56,10 @@ export default class convertBot {
                     const folderOutputPath = `./data/img/${chatId}/convert/${chatId}_${Date.now()}`;
 
                     this.#fileFolderPath = await this.convertController.convert(fileName, fileLink, folderInputPath, folderOutputPath);
+                    console.log(this.#fileFolderPath);
                     const messEnd = "💾 Bạn muốn nhận file theo dạng nào /toPNG hay /toZIP"
                     this.#bot.sendMessage(chatId, messEnd);
+
                 } else {
                     this.#bot.sendMessage(chatId, "⛔ Xin nén ảnh với định dạng .zip/.rar");
                 }
