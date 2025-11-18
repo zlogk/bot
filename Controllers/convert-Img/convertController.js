@@ -2,7 +2,6 @@ import convertModel from "../../Model/convert-Img/convertModel.js";
 import FileManager from "../../Model/FileManager.js";
 import axios from "axios";
 import sharp from "sharp";
-import mime from 'mime';
 import rarZipManager from "../../Model/rarZipManager.js";
 import path from "path";
 
@@ -19,7 +18,7 @@ export default class convertController {
         }
         return false;
     }
-    async convert(fileName, fileLink, folderInputPath, folderOutputPath) {
+    async convert(bot, chatId, fileName, fileLink, folderInputPath, folderOutputPath) {
         try {
             const response = await axios({
                 url: fileLink,
@@ -53,6 +52,10 @@ export default class convertController {
                                 await sharp(folderInputPath + '/' + file).png({ "quality": 100 }).toFile(outFile);
                             }
                         });
+                        if (FileManager.fileReady(outFile,200)) {
+                            const messEnd = "💾 Bạn muốn nhận file theo dạng nào /toPNG hay /toZIP"
+                            bot.sendMessage(chatId, messEnd);
+                        }
                         return { isFolder: false, path: outFile };
                     }
                 } else {
@@ -76,18 +79,15 @@ export default class convertController {
         }
     }
     async sendFile(bot, chatId, fileFolderPath) {
-        // const contenttype = mime.getType(filePath) || "application/octet-stream";
         const fileName = fileFolderPath.path.split("/").pop();
         try {
             if (!fileFolderPath.isFolder) {
                 const fileSendStream = await FileManager.readStream(fileFolderPath.path);
-                // const imgBina = await FileManager.readBinary(fileFolderPath.path);
                 const fileOptions = {
                     filename: fileName,
                     caption: `${fileName}`
                 };
                 return bot.sendDocument(chatId, fileSendStream.stream, fileOptions);
-                // return bot.sendDocument(chatId, imgBina, fileOptions);
             }
 
         } catch (err) {

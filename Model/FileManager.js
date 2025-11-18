@@ -99,24 +99,6 @@ export default class FileManager {
             if (err) throw new Error("readBinary: (>.<): " + err);
         }
     }
-    static async fileReady(filePath){
-        try{
-            await fs.promises.access(filePath, fs.constants.R_OK);
-            return true;
-        }catch(err){
-            throw err;
-        }
-    }
-    // static async readBinary(filePath) {
-    //     try {
-    //         await fs.promises.access(filePath, fs.constants.R_OK);
-    //         const binary = await fs.promises.readFile(filePath);
-    //         return binary;
-    //     } catch (err) {
-    //         console.error("readBinary ❌ Không đọc được file:", filePath, err);
-    //         return null;
-    //     }
-    // }
     //STREAM
     static async writeStream(filePath, readAbleStream) {
         // await this.ensureDir(filePath);
@@ -197,5 +179,28 @@ export default class FileManager {
     }
     static getNameFileNotExt(name_path) {
         return path.basename(name_path, path.extname(name_path));
+    }
+    static _isFileAvailable(filePath) {
+        return new Promise((resolve, reject) => {
+            fs.open(filePath, "r+", (err, fd) => {
+                if (err) resolve(false);
+                else {
+                    fs.close(fd, () => resolve(true));
+                }
+            })
+        });
+    }
+
+    static fileReady(filePath, interval = 500) {
+        return new Promise((resolve, reject) => {
+            const timer = setInterval(async () => {
+                if (this.exists(filePath)) {
+                    if (await this._isFileAvailable(filePath)){
+                        clearInterval(timer);
+                        resolve(true);
+                    }
+                }
+            }, interval);
+        });
     }
 }
