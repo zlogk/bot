@@ -8,11 +8,11 @@ export default class FileManager {
         return fs.existsSync(filePath);
     }
     //CHECK FOLDER EXIST
-    static async ExistsFolder(folderPath){
-        try{
+    static async ExistsFolder(folderPath) {
+        try {
             await fs.promises.access(folderPath);
             return true;
-        }catch{
+        } catch {
             return false;
         }
     }
@@ -28,11 +28,11 @@ export default class FileManager {
         }
     }
     //CREATE DIRECTORY
-    static async mkDir(folderPath){
-        try{
-            await fs.promises.mkdir(folderPath,{recursive:true});
+    static async mkDir(folderPath) {
+        try {
+            await fs.promises.mkdir(folderPath, { recursive: true });
             return folderPath;
-        }catch(err){
+        } catch (err) {
             throw err;
         }
     }
@@ -87,16 +87,26 @@ export default class FileManager {
             if (err) throw new Error("writeBirary: (>.<): " + err);
         }
     }
+    // static async readBinary(filePath) {
+    //     try {
+    //         if (this.exists(filePath)) {
+    //             const binary = await fs.promises.readFile(filePath);
+    //             return binary;
+    //         } else {
+    //             return null;
+    //         }
+    //     } catch (err) {
+    //         if (err) throw new Error("readBinary: (>.<): " + err);
+    //     }
+    // }
     static async readBinary(filePath) {
         try {
-            if (this.exists(filePath)) {
-                const binary = await fs.promises.readFile(filePath);
-                return binary;
-            } else {
-                return null;
-            }
+            await fs.promises.access(filePath, fs.constants.R_OK);
+            const binary = await fs.promises.readFile(filePath);
+            return binary;
         } catch (err) {
-            if (err) throw new Error("readBinary: (>.<): " + err);
+            console.error("readBinary ❌ Không đọc được file:", filePath, err);
+            return null;
         }
     }
     //STREAM
@@ -151,12 +161,12 @@ export default class FileManager {
         }
     }
     //list file-folder of folder
-    static async listOfFolder(folderPath){
-        try{
-            if(this.ExistsFolder(folderPath)){
+    static async listOfFolder(folderPath) {
+        try {
+            if (this.ExistsFolder(folderPath)) {
                 return await fs.promises.readdir(folderPath);
             }
-        }catch(err){
+        } catch (err) {
             throw err;
         }
     }
@@ -165,19 +175,19 @@ export default class FileManager {
      * @param {string} path path
      * @returns {Promise} "file" || "folder" || "other"
      */
-    static async checkIsFolderIsFile(path){
-        try{
+    static async checkIsFolderIsFile(path) {
+        try {
             const stat = await fs.promises.stat(path);
-            if(stat.isFile()){
+            if (stat.isFile()) {
                 return 'file'
             }
-            if(stat.isDirectory()){
+            if (stat.isDirectory()) {
                 return 'folder';
             }
             return 'other';
-        }catch(err){return false;}
+        } catch (err) { return false; }
     }
-    static getNameFileNotExt(name_path){
-        return path.basename(name_path,path.extname(name_path));
+    static getNameFileNotExt(name_path) {
+        return path.basename(name_path, path.extname(name_path));
     }
 }
