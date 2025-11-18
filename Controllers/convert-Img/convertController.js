@@ -92,6 +92,7 @@ export default class convertController {
                 }
 
             } catch (err) {
+                console.log(err);
                 bot.sendMessage(chatId, "Lỗi gửi File");
             }
         }
