@@ -78,7 +78,7 @@ export default class convertController {
     async sendFile(bot, chatId, fileFolderPath) {
         // const contenttype = mime.getType(filePath) || "application/octet-stream";
 
-        const fileName = fileFolderPath.path.split("/").pop();
+        // const fileName = fileFolderPath.path.split("/").pop();
         // try {
         //     if (!fileFolderPath.isFolder) {
         //         // const fileSendStream = await FileManager.readStream(fileFolderPath.path);
