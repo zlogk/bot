@@ -83,12 +83,14 @@ export default class convertController {
             const fileName = fileFolderPath.path.split("/").pop();
             try {
                 if (!fileFolderPath.isFolder) {
-                    const fileSendStream = await FileManager.readStream(fileFolderPath.path);
+                    // const fileSendStream = await FileManager.readStream(fileFolderPath.path);
+                    const fileSend = await FileManager.readBinary(fileFolderPath);
                     const fileOptions = {
                         filename: fileName,
                         caption: `${fileName}`
                     };
-                    return bot.sendDocument(chatId, fileSendStream.stream, fileOptions);
+                    // return bot.sendDocument(chatId, fileSendStream.stream, fileOptions);
+                    return bot.sendDocument(chatId,fileSend,fileOptions);
                 }
 
             } catch (err) {
