@@ -79,21 +79,21 @@ export default class convertController {
         // const contenttype = mime.getType(filePath) || "application/octet-stream";
 
         const fileName = fileFolderPath.path.split("/").pop();
-        try {
-            if (!fileFolderPath.isFolder) {
-                // const fileSendStream = await FileManager.readStream(fileFolderPath.path);
-                const imgBina = FileManager.readBinary(fileFolderPath.path);
-                const fileOptions = {
-                    filename: fileName,
-                    caption: `${fileName}`
-                };
-                // return bot.sendDocument(chatId, fileSendStream.stream, fileOptions);
-                return bot.sendDocument(chatId, imgBina, fileOptions);
-            }
+        // try {
+        //     if (!fileFolderPath.isFolder) {
+        //         // const fileSendStream = await FileManager.readStream(fileFolderPath.path);
+        //         const imgBina = await FileManager.readBinary(fileFolderPath.path);
+        //         const fileOptions = {
+        //             filename: fileName,
+        //             caption: `${fileName}`
+        //         };
+        //         // return bot.sendDocument(chatId, fileSendStream.stream, fileOptions);
+        //         return bot.sendDocument(chatId, imgBina, fileOptions);
+        //     }
 
-        } catch (err) {
-            bot.sendMessage(chatId, "Lỗi gửi File");
-        }
+        // } catch (err) {
+        //     bot.sendMessage(chatId, "Lỗi gửi File");
+        // }
     }
 
 }
