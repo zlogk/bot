@@ -52,7 +52,7 @@ export default class convertController {
                                 await sharp(folderInputPath + '/' + file).png({ "quality": 100 }).toFile(outFile);
                             }
                         });
-                        if (FileManager.fileReady(outFile,200)) {
+                        if (FileManager.fileReady(outFile, 200)) {
                             const messEnd = "💾 Bạn muốn nhận file theo dạng nào /toPNG hay /toZIP"
                             bot.sendMessage(chatId, messEnd);
                         }
@@ -79,20 +79,23 @@ export default class convertController {
         }
     }
     async sendFile(bot, chatId, fileFolderPath) {
-        const fileName = fileFolderPath.path.split("/").pop();
-        try {
-            if (!fileFolderPath.isFolder) {
-                const fileSendStream = await FileManager.readStream(fileFolderPath.path);
-                const fileOptions = {
-                    filename: fileName,
-                    caption: `${fileName}`
-                };
-                return bot.sendDocument(chatId, fileSendStream.stream, fileOptions);
-            }
+        if (FileManager.fileReady(fileFolderPath)) {
+            const fileName = fileFolderPath.path.split("/").pop();
+            try {
+                if (!fileFolderPath.isFolder) {
+                    const fileSendStream = await FileManager.readStream(fileFolderPath.path);
+                    const fileOptions = {
+                        filename: fileName,
+                        caption: `${fileName}`
+                    };
+                    return bot.sendDocument(chatId, fileSendStream.stream, fileOptions);
+                }
 
-        } catch (err) {
-            bot.sendMessage(chatId, "Lỗi gửi File");
+            } catch (err) {
+                bot.sendMessage(chatId, "Lỗi gửi File");
+            }
         }
+
     }
 
 }
