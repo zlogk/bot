@@ -5,7 +5,6 @@ import sharp from "sharp";
 import mime from 'mime';
 import rarZipManager from "../../Model/rarZipManager.js";
 import path from "path";
-import FileManager from "../../Model/FileManager.js";
 
 export default class convertController {
     constructor() {
