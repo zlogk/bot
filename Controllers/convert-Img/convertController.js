@@ -83,8 +83,7 @@ export default class convertController {
             if (!fileFolderPath.isFolder) {
                 const fileSendStream = await FileManager.readStream(fileFolderPath.path);
                 const fileOptions = {
-                    filename: fileName,
-                    caption: `${fileName}`
+                    filename: fileName
                 };
                 bot.sendDocument(chatId, fileSendStream.stream, fileOptions);
             }
