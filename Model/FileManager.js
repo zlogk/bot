@@ -4,8 +4,8 @@ import { pipeline } from 'stream/promises';
 
 export default class FileManager {
     //CHECK FILE EXIST
-    static exists(filePath) {
-        return fs.existsSync(filePath);
+    static async exists(filePath) {
+        return fs.promises.access(filePath, fs.constants.R_OK);
     }
     //CHECK FOLDER EXIST
     static async ExistsFolder(folderPath) {
@@ -180,22 +180,24 @@ export default class FileManager {
     static getNameFileNotExt(name_path) {
         return path.basename(name_path, path.extname(name_path));
     }
-    static _isFileAvailable(filePath) {
-        return new Promise((resolve, reject) => {
-            fs.open(filePath, "r+", (err, fd) => {
-                if (err) resolve(false);
-                else {
-                    fs.close(fd, () => resolve(true));
-                }
-            })
-        });
-    }
+    // static async _isFileStreamAvailable(filePath) {
 
-    static fileReady(filePath, interval = 500) {
+    // }
+    // static readStream(filePath) {
+    //     if (!this.exists(filePath)) return null;
+    //     return new Promise((resolve, reject) => {
+    //         const rs = fs.createReadStream(filePath);
+    //         rs.on("open", () => {
+    //             resolve({ ready: true, path: filePath, stream: rs });
+    //         })
+    //         rs.on("error", (err) => reject(err));
+    //     })
+    // }
+    static fileStreamReady(filePath, interval = 500) {
         return new Promise((resolve, reject) => {
             const timer = setInterval(async () => {
                 if (this.exists(filePath)) {
-                    if (await this._isFileAvailable(filePath)){
+                    if (await this.readStream(filePath).ready) {
                         clearInterval(timer);
                         resolve(true);
                     }
@@ -203,4 +205,28 @@ export default class FileManager {
             }, interval);
         });
     }
+    static async readStream_(filePath) {
+        try {
+            await fs.promises.access(filePath, fs.constants.R_OK);
+
+            const rs = fs.createReadStream(filePath);
+
+            return await new Promise((resolve, reject) => {
+                rs.on("open", () => {
+                    resolve({
+                        ready: true,
+                        path: filePath,
+                        stream: rs
+                    });
+                });
+
+                rs.on("error", (err) => reject(err));
+            });
+
+        } catch (err) {
+            console.error("❌ Không đọc được file:", filePath, err);
+            return null;
+        }
+    }
+
 }
