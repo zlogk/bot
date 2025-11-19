@@ -80,8 +80,16 @@ export default class convertBot {
                 return;
             }
             try {
-                await this.convertController.sendFile(this.#bot, chatId, this.#fileFolderPath);
-                delete this.userStatus[chatId];
+                if (this.#fileFolderPath) {
+                    await this.convertController.sendFile(this.#bot, chatId, this.#fileFolderPath);
+                    delete this.userStatus[chatId];
+                    this.#fileFolderPath = null;
+                    return;
+                }
+
+                this.#bot.sendMessage(chatId, "Xin hãy dùng lệnh /png trước.");
+                return;
+
             } catch (err) {
                 return err
             }
