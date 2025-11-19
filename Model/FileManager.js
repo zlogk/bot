@@ -5,7 +5,13 @@ import { pipeline } from 'stream/promises';
 export default class FileManager {
     //CHECK FILE EXIST
     static async exists(filePath) {
-        return fs.promises.access(filePath, fs.constants.R_OK);
+        // return fs.promises.access(filePath, fs.constants.R_OK);
+        try{
+            await fs.promises.access(filePath, fs.constants.R_OK);
+            return true;
+        }catch(err){
+            return false;
+        }
     }
     //CHECK FOLDER EXIST
     static async ExistsFolder(folderPath) {
