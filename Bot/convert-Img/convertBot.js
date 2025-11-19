@@ -56,7 +56,7 @@ export default class convertBot {
                     const folderOutputPath = `./data/img/${chatId}/convert/${chatId}_${Date.now()}`;
 
                     this.#fileFolderPath = await this.convertController.convert(this.#bot, chatId, fileName, fileLink, folderInputPath, folderOutputPath);
-            
+
                     const messEnd = "💾 Bạn muốn nhận file theo dạng nào /toPNG hay /toZIP"
                     this.#bot.sendMessage(chatId, messEnd);
 
@@ -75,9 +75,16 @@ export default class convertBot {
             delete this.#userStatus[chatId];
         });
         this.#bot.onText(/\/toPNG/, async (msg) => {
-            const chatId = msg.chat.id;
-            await this.convertController.sendFile(this.#bot, chatId, this.#fileFolderPath);
-            delete this.#userStatus[chatId];
+            // const chatId = msg.chat.id;
+            // await this.convertController.sendFile(this.#bot, chatId, this.#fileFolderPath);
+            // delete this.#userStatus[chatId];
+            try {
+                const chatId = msg.chat.id;
+                await this.convertController.sendFile(this.#bot, chatId, this.#fileFolderPath);
+                delete this.#userStatus[chatId];
+            }catch(err){
+                console.log(err);
+            }
         });
 
     }
