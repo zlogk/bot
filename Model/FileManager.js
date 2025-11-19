@@ -5,11 +5,10 @@ import { pipeline } from 'stream/promises';
 export default class FileManager {
     //CHECK FILE EXIST
     static async exists(filePath) {
-        // return fs.promises.access(filePath, fs.constants.R_OK);
-        try{
+        try {
             await fs.promises.access(filePath, fs.constants.R_OK);
             return true;
-        }catch(err){
+        } catch (err) {
             return false;
         }
     }
@@ -132,15 +131,18 @@ export default class FileManager {
             throw err;
         }
     }
-    static readStream(filePath) {
-        const realPath = path.resolve(filePath);
-        if (!this.exists(realPath)) return null;
+    static async readStream(filePath) {
+        const fileExist = await this.exists(filePath);
+        if (!fileExist) {
+            console.log("File không tồn tại: ", filePath);
+            return null;
+        }
         return new Promise((resolve, reject) => {
-            const rs = fs.createReadStream(realPath);
+            const rs = fs.createReadStream(filePath);
             rs.on("open", () => {
-                resolve({ ready: true, path: realPath, stream: rs });
+                resolve({ ready: true, path: filePath, stream: rs });
             })
-            rs.on("error", (err) => reject(err));
+            rs.on("error", () => reject({ ready: false, path: "", stream: undefined }));
         })
     }
 
@@ -187,32 +189,7 @@ export default class FileManager {
     static getNameFileNotExt(name_path) {
         return path.basename(name_path, path.extname(name_path));
     }
-    // static async _isFileStreamAvailable(filePath) {
 
-    // }
-    // static readStream(filePath) {
-    //     if (!this.exists(filePath)) return null;
-    //     return new Promise((resolve, reject) => {
-    //         const rs = fs.createReadStream(filePath);
-    //         rs.on("open", () => {
-    //             resolve({ ready: true, path: filePath, stream: rs });
-    //         })
-    //         rs.on("error", (err) => reject(err));
-    //     })
-    // }
-    static fileStreamReady(filePath, interval = 500) {
-        return new Promise((resolve, reject) => {
-            const timer = setInterval(async () => {
-                if (this.exists(filePath)) {
-                    // if (await this.readStream(filePath).ready) {
-                    //     clearInterval(timer);
-                    //     resolve(true);
-                    // }
-                    clearInterval(timer);
-                    resolve(true);
-                }
-            }, interval);
-        });
-    }
+
 
 }

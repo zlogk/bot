@@ -57,8 +57,8 @@ export default class convertBot {
 
                     this.#fileFolderPath = await this.convertController.convert(this.#bot, chatId, fileName, fileLink, folderInputPath, folderOutputPath);
 
-                    // const messEnd = "💾 Bạn muốn nhận file theo dạng nào /toPNG hay /toZIP"
-                    // this.#bot.sendMessage(chatId, messEnd);
+                    const messEnd = "💾 Bạn muốn nhận file theo dạng nào /toPNG hay /toZIP"
+                    this.#bot.sendMessage(chatId, messEnd);
 
                 } else {
                     this.#bot.sendMessage(chatId, "⛔ Xin nén ảnh với định dạng .zip/.rar");

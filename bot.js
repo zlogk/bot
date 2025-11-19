@@ -7,7 +7,7 @@ dotenv.config();
 
 const Main = async () => {
     const TOKEN = process.env.BOT_TOKEN;
-    const bot = new TelegramBot(TOKEN, { polling:false });
+    const bot = new TelegramBot(TOKEN, { polling: false });
     await fetch(`https://api.telegram.org/bot${TOKEN}/getUpdates?offset=-1`);
     bot.startPolling();
     bot.setMyCommands([
@@ -15,9 +15,13 @@ const Main = async () => {
         { command: "/png", description: "Chuyển sang định dạng PNG" },
         { command: "/video", description: "Download video từ Youtube, Facebook,..." }
     ]);
-    const piInfo = new RaspiBot(bot);
-    piInfo.Run();
-    const convertImg = new convertBot(bot);
-    convertImg.Run();
+    try {
+        const piInfo = new RaspiBot(bot);
+        await piInfo.Run();
+        const convertImg = new convertBot(bot);
+        await convertImg.Run();
+    }catch{
+        console.log('Bot ERROR');
+    }
 }
 Main();

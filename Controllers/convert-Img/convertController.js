@@ -52,10 +52,7 @@ export default class convertController {
                                 await sharp(folderInputPath + '/' + file).png({ "quality": 100 }).toFile(outFile);
                             }
                         });
-                        if (FileManager.fileStreamReady(outFile, 200)) {
-                        const messEnd = "💾 Bạn muốn nhận file theo dạng nào /toPNG hay /toZIP"
-                        bot.sendMessage(chatId, messEnd);
-                        }
+
                         return { isFolder: false, path: outFile };
                     }
                 } else {
@@ -84,15 +81,13 @@ export default class convertController {
         try {
             if (!fileFolderPath.isFolder) {
                 const fileSendStream = await FileManager.readStream(fileFolderPath.path);
-                console.log(fileSendStream.ready);
+                // console.log(fileSendStream.ready);
                 console.log(fileSendStream.path);
-                // const fileSend = await FileManager.readBinary(fileFolderPath);
                 const fileOptions = {
                     filename: fileName,
                     caption: `${fileName}`
                 };
                 bot.sendDocument(chatId, fileSendStream.stream, fileOptions);
-                // return bot.sendDocument(chatId, fileFolderPath.path, fileOptions);
             }
 
         } catch (err) {
