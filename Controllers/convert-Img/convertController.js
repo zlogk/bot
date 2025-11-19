@@ -122,9 +122,11 @@ export default class convertController {
     }
     async sendFile(bot, chatId, fileFolderPath) {
         const fileName = fileFolderPath.path.split("/").pop();
+        console.log(fileFolderPath);
         try {
             if (!fileFolderPath.isFolder) {
                 const fileSendStream = await FileManager.readStream(fileFolderPath.path);
+                // console.log(fileFolderPath.);
                 const fileOptions = {
                     filename: fileName,
                     caption: `${fileName}`
