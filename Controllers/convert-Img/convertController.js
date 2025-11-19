@@ -18,8 +18,8 @@ export default class convertController {
         }
         return false;
     }
-    async convert(bot, chatId, fileName, fileLink, folderInputPath, folderOutputPath) {
-            try {
+    async convert(fileName, fileLink, folderInputPath, folderOutputPath) {
+        try {
             const response = await axios({
                 url: fileLink,
                 method: "GET",
@@ -47,18 +47,14 @@ export default class convertController {
                         const listFile = await FileManager.listOfFolder(folderInputPath);
                         const dir = await FileManager.mkDir(folderOutputPath + '/img');
                         const outFile = dir + '/' + FileManager.getNameFileNotExt(fileName) + '.png';
-                        // listFile.forEach(async (file) => {
-                        //     if (this.#checkSupport(file)) {
-                        //         await sharp(folderInputPath + '/' + file).png({ "quality": 100 }).toFile(outFile);
-                        //     }
-                        // });
-                        for(const file of listFile){
-                            if(this.#checkSupport(file)){
+                
+                        for (const file of listFile) {
+                            if (this.#checkSupport(file)) {
                                 await sharp(folderInputPath + '/' + file).png({ "quality": 100 }).toFile(outFile);
                             }
                         }
-                        return {isFolder: false, path: outFile };
-                        
+                        return { isFolder: false, path: outFile };
+
                     }
                 } else {
                 }
@@ -67,7 +63,7 @@ export default class convertController {
         } catch (err) {
             console.log(err);
         }
-    
+
     }
     async sendCompress(bot, chatId) {
         try {
@@ -83,11 +79,9 @@ export default class convertController {
     }
     async sendFile(bot, chatId, fileFolderPath) {
         const fileName = fileFolderPath.path.split("/").pop();
-        console.log(fileFolderPath.path);
         try {
             if (!fileFolderPath.isFolder) {
                 const fileSendStream = await FileManager.readStream(fileFolderPath.path);
-                // console.log(fileFolderPath.);
                 const fileOptions = {
                     filename: fileName,
                     caption: `${fileName}`

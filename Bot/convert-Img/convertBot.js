@@ -1,14 +1,13 @@
 import convertController from "../../Controllers/convert-Img/convertController.js";
 import path from 'path';
-import FileManager from "../../Model/FileManager.js";
 
 export default class convertBot {
     #bot;
     #fileFolderPath;
-    #userStatus;
+    userStatus;
     constructor(bot) {
         this.#bot = bot;
-        this.#userStatus = {};
+        this.userStatus = {};
         this.convertController = new convertController();
     }
     async Run() {
@@ -28,7 +27,7 @@ export default class convertBot {
 | ✅**HEIF**
 | ✅**RAW**
 | ✅**SVG**`;
-            this.#userStatus[chatId] = "await_png";
+            this.userStatus[chatId] = "await_png";
             this.#bot.sendMessage(chatId, mess);
             this.#bot.sendMessage(chatId, "⚠️ Nếu nhiều ảnh bỏ vào 1 Folder nén lại -> .zip/.rar\n" +
                 "⚠️ Tên file nén và tên folder phải giống nhau\n" +
@@ -37,7 +36,7 @@ export default class convertBot {
 
         this.#bot.on("document", async (msg) => {
             const chatId = msg.chat.id;
-            if (this.#userStatus[chatId] !== "await_png") {
+            if (this.userStatus[chatId] !== "await_png") {
                 this.#bot.sendMessage(chatId, "Xin hãy dùng lệnh /png trước.");
                 return;
             }
@@ -55,7 +54,7 @@ export default class convertBot {
                     const folderInputPath = `./data/img/${chatId}/source/${chatId}_${Date.now()}`;
                     const folderOutputPath = `./data/img/${chatId}/convert/${chatId}_${Date.now()}`;
 
-                    this.#fileFolderPath = await this.convertController.convert(this.#bot, chatId, fileName, fileLink, folderInputPath, folderOutputPath);
+                    this.#fileFolderPath = await this.convertController.convert(fileName, fileLink, folderInputPath, folderOutputPath);
 
                     const messEnd = "💾 Bạn muốn nhận file theo dạng nào /toPNG hay /toZIP"
                     this.#bot.sendMessage(chatId, messEnd);
@@ -72,18 +71,19 @@ export default class convertBot {
         this.#bot.onText(/\/toZip/, async (msg) => {
             const chatId = msg.chat.id;
             await this.convertController.sendCompress(this.#bot, chatId, this.#fileFolderPath);
-            delete this.#userStatus[chatId];
+            delete this.userStatus[chatId];
         });
         this.#bot.onText(/\/toPNG/, async (msg) => {
-            // const chatId = msg.chat.id;
-            // await this.convertController.sendFile(this.#bot, chatId, this.#fileFolderPath);
-            // delete this.#userStatus[chatId];
+            const chatId = msg.chat.id;
+            if (this.userStatus[chatId] !== "await_png") {
+                this.#bot.sendMessage(chatId, "Xin hãy dùng lệnh /png trước.");
+                return;
+            }
             try {
-                const chatId = msg.chat.id;
                 await this.convertController.sendFile(this.#bot, chatId, this.#fileFolderPath);
-                delete this.#userStatus[chatId];
-            }catch(err){
-                console.log(err);
+                delete this.userStatus[chatId];
+            } catch (err) {
+                return err
             }
         });
 

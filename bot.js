@@ -16,10 +16,14 @@ const Main = async () => {
         { command: "/video", description: "Download video từ Youtube, Facebook,..." }
     ]);
 
-    const piInfo = new RaspiBot(bot);
-    piInfo.Run();
-    const convertImg = new convertBot(bot);
-    convertImg.Run();
+    try {
+        const piInfo = new RaspiBot(bot);
+        piInfo.Run();
+        const convertImg = new convertBot(bot);
+        convertImg.Run();
+    }catch(err){
+        console.log(err);
+    }
 
 }
 Main();
