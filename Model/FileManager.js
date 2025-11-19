@@ -4,163 +4,141 @@ import { pipeline } from 'stream/promises';
 
 export default class FileManager {
     //CHECK FILE EXIST
-    static exists(filePath) {
-        return new Promise(async (resolve, reject) => {
-            try {
-                await fs.promises.access(filePath, fs.constants.R_OK);
-                resolve(true);
-            } catch (err) {
-                resolve(false);
-            }
-        });
+    static async exists(filePath) {
+        try {
+            await fs.promises.access(filePath, fs.constants.R_OK);
+            return true
+        } catch {
+            return false
+        }
     }
     //CHECK FOLDER EXIST
-    static ExistsFolder(folderPath) {
-        return new Promise(async (resolve, reject) => {
-            try {
-                await fs.promises.access(folderPath);
-                resolve(true);
-            } catch {
-                reject(false);
-            }
-        });
+    static async ExistsFolder(folderPath) {
+        try {
+            await fs.promises.access(folderPath);
+            return true;
+        } catch {
+            return false;
+        }
     }
 
     //CREATE DIRECTORY IF NOT EXISTS
-    static ensureDir(filePath) {
-        return new Promise(async (resolve, reject) => {
-            const dir = path.dirname(filePath);
-            try {
-                await fs.promises.mkdir(dir, { recursive: true });
-                resolve(dir);
-            } catch (err) {
-                if (err.code !== "EEXIST") reject("ensureDir: " + err);
-            }
-        });
+    static async ensureDir(filePath) {
+        const dir = path.dirname(filePath);
+        try {
+            await fs.promises.mkdir(dir, { recursive: true });
+            return dir;
+        } catch (err) {
+            if (err.code !== "EEXIST") return err;
+        }
     }
     //CREATE DIRECTORY
-    static mkDir(folderPath) {
-        return new Promise(async (resolve, reject) => {
-            try {
-                await fs.promises.mkdir(folderPath, { recursive: true });
-                resolve(folderPath);
-            } catch (err) {
-                reject(err);
-            }
-        });
+    static async mkDir(folderPath) {
+        try {
+            await fs.promises.mkdir(folderPath, { recursive: true });
+            return folderPath;
+        } catch(err) {
+            return err;
+        }
     }
     //WRITE - READ - APPEND TEXT
-    static writeText(filePath, content) {
-        return new Promise(async (resolve, reject) => {
-            try {
-                await this.ensureDir(filePath);
-                await fs.promises.writeFile(filePath, content, { encoding: "utf-8" });
-                resolve(content);
-            } catch (err) {
-                reject(err);
-            }
-        });
+    static async writeText(filePath, content) {
+        try {
+            await this.ensureDir(filePath);
+            await fs.promises.writeFile(filePath, content, { encoding: "utf-8" });
+            return true;
+        } catch(err) {
+            return err;
+        }
     }
 
-    static AppendText(filePath, content) {
-        return new Promise(async (resolve, reject) => {
-            try {
-                const check = await this.exists(filePath);
-                if (!check) reject('File not found.');
-                await fs.promises.appendFile(filePath, content);
-                resolve(true);
-            } catch (err) {
-                reject(err);
-            }
-        });
+    static async AppendText(filePath, content) {
+        try {
+            const check = await this.exists(filePath);
+            if (!check) reject('File not found.');
+            await fs.promises.appendFile(filePath, content);
+            return true;
+        } catch (err) {
+            return err;
+        }
     }
-    static readText(filePath) {
-        return new Promise(async (resolve, reject) => {
-            try {
-                const check = await this.exists(filePath);
-                if (check) {
-                    const text = await fs.promises.readFile(filePath, { encoding: "utf-8" });
-                    resolve(text);
-                } else {
-                    reject('File not found.');
-                }
-            } catch (err) {
-                reject(err);
+    static async readText(filePath) {
+        try {
+            const check = await this.exists(filePath);
+            if (check) {
+                const text = await fs.promises.readFile(filePath, { encoding: "utf-8" });
+                return text;
+            } else {
+                return false;
             }
-        });
+        } catch(err) {
+            return err;
+        }
     }
     //BINARY (BUFFER)
-    static writeBirary(filePath, buffer) {
-        return new Promise(async (resolve, reject) => {
-            try {
-                await this.ensureDir(filePath);
-                await fs.promises.writeFile(filePath, buffer);
-                resolve(true);
-            } catch (err) {
-                reject(err);
-            }
-        });
+    static async writeBirary(filePath, buffer) {
+        try {
+            await this.ensureDir(filePath);
+            await fs.promises.writeFile(filePath, buffer);
+            return true;
+        } catch(err) {
+            return err;
+        }
     }
-    static readBinary(filePath) {
-        return new Promise(async (reolve, reject) => {
-            try {
-                const check = await this.exists(filePath);
-                if (check) {
-                    const binary = await fs.promises.readFile(filePath);
-                    resolve(binary);
-                } else {
-                    reject("File not found");
-                }
-            } catch (err) {
-                reject(err);
+    static async readBinary(filePath) {
+        try {
+            const check = await this.exists(filePath);
+            if (check) {
+                const binary = await fs.promises.readFile(filePath);
+                return binary;
+            } else {
+                return "File not found";
             }
-        });
+        } catch (err) {
+            return err;
+        }
     }
     //STREAM
-    static writeStream(filePath, readAbleStream) {
-        return new Promise(async (resolve, reject) => {
-            let tempPath = '';
-            try {
-                await this.ensureDir(filePath);
-                tempPath = filePath + '.part';
-                await pipeline(readAbleStream, fs.createWriteStream(tempPath));
-
-                await fs.promises.rename(tempPath, filePath);
-                resolve({ success: true, path: filePath });
-            } catch (err) {
-                if (FileManager.exists(tempPath)) {
-                    await fs.promises.unlink(tempPath);
-                }
-                reject(err);
+    static async writeStream(filePath, readAbleStream) {
+        let tempPath = '';
+        try {
+            await this.ensureDir(filePath);
+            tempPath = filePath + '.part';
+            await pipeline(readAbleStream, fs.createWriteStream(tempPath));
+            await fs.promises.rename(tempPath, filePath);
+            return { success: true, path: filePath };
+        } catch (err) {
+            if (FileManager.exists(tempPath)) {
+                await fs.promises.unlink(tempPath);
             }
-        });
+            return err;
+        }
     }
-    static readStream(filePath) {
-        // const fileExist = await this.exists(filePath);
-        // if (!fileExist) {
-        //     console.log("File không tồn tại: ", filePath);
-        //     return null;
-        // }
-        // return new Promise((resolve, reject) => {
-        //     const rs = fs.createReadStream(filePath);
-        //     rs.on("open", () => {
-        //         resolve({ ready: true, path: filePath, stream: rs });
-        //     })
-        //     rs.on("error", () => reject({ ready: false, path: "", stream: undefined }));
-        // })
-        return new Promise(async (resolve, reject) => {
-            const fileExist = await this.exists(filePath);
-            if (!fileExist) {
-                console.log("File không tồn tại: ", filePath);
-                reject(null);
-            }
+    static async readStream(filePath) {
+        const fileExist = await this.exists(filePath);
+        if (!fileExist) {
+            return "File không tồn tại.";
+        }
+        return new Promise((resolve, reject) => {
             const rs = fs.createReadStream(filePath);
             rs.on("open", () => {
                 resolve({ ready: true, path: filePath, stream: rs });
             })
             rs.on("error", () => reject({ ready: false, path: "", stream: undefined }));
-
         });
+        // return new Promise(async (resolve, reject) => {
+        //     const fileExist = await this.exists(filePath);
+        //     if (!fileExist) {
+        //         console.log("File không tồn tại: ", filePath);
+        //         reject(null);
+        //     }
+        //     const rs = fs.createReadStream(filePath);
+        //     rs.on("open", () => {
+        //         resolve({ ready: true, path: filePath, stream: rs });
+        //     })
+        //     rs.on("error", () => reject({ ready: false, path: "", stream: undefined }));
+
+        // });
     }
 
     //DELETE 
