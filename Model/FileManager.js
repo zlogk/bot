@@ -10,7 +10,7 @@ export default class FileManager {
                 await fs.promises.access(filePath, fs.constants.R_OK);
                 resolve(true);
             } catch (err) {
-                reject(false);
+                resolve(false);
             }
         });
     }
