@@ -84,6 +84,8 @@ export default class convertController {
         try {
             if (!fileFolderPath.isFolder) {
                 const fileSendStream = await FileManager.readStream(fileFolderPath.path);
+                console.log(fileFolderPath.ready);
+                console.log(fileFolderPath.paths);
                 // const fileSend = await FileManager.readBinary(fileFolderPath);
                 const fileOptions = {
                     filename: fileName,
