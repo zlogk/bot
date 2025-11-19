@@ -52,10 +52,10 @@ export default class convertController {
                                 await sharp(folderInputPath + '/' + file).png({ "quality": 100 }).toFile(outFile);
                             }
                         });
-                        // if (FileManager.fileStreamReady(outFile, 200)) {
+                        if (FileManager.fileStreamReady(outFile, 200)) {
                         const messEnd = "💾 Bạn muốn nhận file theo dạng nào /toPNG hay /toZIP"
                         bot.sendMessage(chatId, messEnd);
-                        // }
+                        }
                         return { isFolder: false, path: outFile };
                     }
                 } else {

@@ -203,36 +203,15 @@ export default class FileManager {
         return new Promise((resolve, reject) => {
             const timer = setInterval(async () => {
                 if (this.exists(filePath)) {
-                    if (await this.readStream(filePath).ready) {
-                        clearInterval(timer);
-                        resolve(true);
-                    }
+                    // if (await this.readStream(filePath).ready) {
+                    //     clearInterval(timer);
+                    //     resolve(true);
+                    // }
+                    clearInterval(timer);
+                    resolve(true);
                 }
             }, interval);
         });
-    }
-    static async readStream_(filePath) {
-        try {
-            await fs.promises.access(filePath, fs.constants.R_OK);
-
-            const rs = fs.createReadStream(filePath);
-
-            return await new Promise((resolve, reject) => {
-                rs.on("open", () => {
-                    resolve({
-                        ready: true,
-                        path: filePath,
-                        stream: rs
-                    });
-                });
-
-                rs.on("error", (err) => reject(err));
-            });
-
-        } catch (err) {
-            console.error("❌ Không đọc được file:", filePath, err);
-            return null;
-        }
     }
 
 }
