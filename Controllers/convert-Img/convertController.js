@@ -48,12 +48,17 @@ export default class convertController {
                         const listFile = await FileManager.listOfFolder(folderInputPath);
                         const dir = await FileManager.mkDir(folderOutputPath + '/img');
                         const outFile = dir + '/' + FileManager.getNameFileNotExt(fileName) + '.png';
-                        listFile.forEach(async (file) => {
-                            if (this.#checkSupport(file)) {
+                        // listFile.forEach(async (file) => {
+                        //     if (this.#checkSupport(file)) {
+                        //         await sharp(folderInputPath + '/' + file).png({ "quality": 100 }).toFile(outFile);
+                        //     }
+                        // });
+                        for(const file of listFile){
+                            if(this.#checkSupport(file)){
                                 await sharp(folderInputPath + '/' + file).png({ "quality": 100 }).toFile(outFile);
                             }
-                            resolve({isFolder: false, path: outFile });
-                        });
+                        }
+                        resolve({isFolder: false, path: outFile });
                         
                     }
                 } else {
