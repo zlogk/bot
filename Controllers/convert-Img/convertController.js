@@ -18,8 +18,7 @@ export default class convertController {
         }
         return false;
     }
-    convert(bot, chatId, fileName, fileLink, folderInputPath, folderOutputPath) {
-        return new Promise(async(resolve,reject)=>{
+    async convert(bot, chatId, fileName, fileLink, folderInputPath, folderOutputPath) {
             try {
             const response = await axios({
                 url: fileLink,
@@ -43,7 +42,7 @@ export default class convertController {
                             }
                             // await rarZipManager.zip(folderOutputPath + '/' + FileManager.getNameFileNotExt(fileName), folderOutputPath + '/' + FileManager.getNameFileNotExt(fileName));
                         });
-                        resolve({ isFolder: true, path: outDir });
+                        return { isFolder: true, path: outDir };
                     } else {
                         const listFile = await FileManager.listOfFolder(folderInputPath);
                         const dir = await FileManager.mkDir(folderOutputPath + '/img');
@@ -58,7 +57,7 @@ export default class convertController {
                                 await sharp(folderInputPath + '/' + file).png({ "quality": 100 }).toFile(outFile);
                             }
                         }
-                        resolve({isFolder: false, path: outFile });
+                        return {isFolder: false, path: outFile };
                         
                     }
                 } else {
@@ -68,7 +67,7 @@ export default class convertController {
         } catch (err) {
             console.log(err);
         }
-        });
+    
     }
     async sendCompress(bot, chatId) {
         try {
