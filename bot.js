@@ -15,13 +15,11 @@ const Main = async () => {
         { command: "/png", description: "Chuyển sang định dạng PNG" },
         { command: "/video", description: "Download video từ Youtube, Facebook,..." }
     ]);
-    try {
-        const piInfo = new RaspiBot(bot);
-        await piInfo.Run();
-        const convertImg = new convertBot(bot);
-        await convertImg.Run();
-    }catch{
-        console.log('Bot ERROR');
-    }
+
+    const piInfo = new RaspiBot(bot);
+    piInfo.Run();
+    const convertImg = new convertBot(bot);
+    convertImg.Run();
+
 }
 Main();

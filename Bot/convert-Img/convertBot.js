@@ -56,7 +56,7 @@ export default class convertBot {
                     const folderOutputPath = `./data/img/${chatId}/convert/${chatId}_${Date.now()}`;
 
                     this.#fileFolderPath = await this.convertController.convert(this.#bot, chatId, fileName, fileLink, folderInputPath, folderOutputPath);
-
+            
                     const messEnd = "💾 Bạn muốn nhận file theo dạng nào /toPNG hay /toZIP"
                     this.#bot.sendMessage(chatId, messEnd);
 

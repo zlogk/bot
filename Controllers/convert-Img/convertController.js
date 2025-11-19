@@ -18,8 +18,9 @@ export default class convertController {
         }
         return false;
     }
-    async convert(bot, chatId, fileName, fileLink, folderInputPath, folderOutputPath) {
-        try {
+    convert(bot, chatId, fileName, fileLink, folderInputPath, folderOutputPath) {
+        return new Promise(async(resolve,reject)=>{
+            try {
             const response = await axios({
                 url: fileLink,
                 method: "GET",
@@ -42,7 +43,7 @@ export default class convertController {
                             }
                             // await rarZipManager.zip(folderOutputPath + '/' + FileManager.getNameFileNotExt(fileName), folderOutputPath + '/' + FileManager.getNameFileNotExt(fileName));
                         });
-                        return { isFolder: true, path: outDir };
+                        resolve({ isFolder: true, path: outDir });
                     } else {
                         const listFile = await FileManager.listOfFolder(folderInputPath);
                         const dir = await FileManager.mkDir(folderOutputPath + '/img');
@@ -52,8 +53,8 @@ export default class convertController {
                                 await sharp(folderInputPath + '/' + file).png({ "quality": 100 }).toFile(outFile);
                             }
                         });
-
-                        return { isFolder: false, path: outFile };
+                        
+                        resolve({isFolder: false, path: outFile });
                     }
                 } else {
                 }
@@ -62,6 +63,50 @@ export default class convertController {
         } catch (err) {
             console.log(err);
         }
+        });
+        // try {
+        //     const response = await axios({
+        //         url: fileLink,
+        //         method: "GET",
+        //         responseType: "stream"
+        //     });
+        //     const fileCompressDownload = folderInputPath + '/' + fileName;
+        //     const stream = await FileManager.writeStream(fileCompressDownload, response.data);
+        //     await FileManager.mkDir(folderOutputPath);
+        //     if (stream.success) {
+        //         const isFolder = folderInputPath + '/' + FileManager.getNameFileNotExt(fileName);
+        //         if (path.extname(fileCompressDownload).toLocaleLowerCase() === '.zip') {
+        //             await rarZipManager.unzip(fileCompressDownload, folderInputPath);
+        //             // let test = await FileManager.checkIsFolderIsFile(isFolder) === 'folder';
+        //             if (await FileManager.checkIsFolderIsFile(isFolder) === 'folder') {
+        //                 const listFile = await FileManager.listOfFolder(isFolder);
+        //                 const outDir = await FileManager.mkDir(folderOutputPath + '/' + FileManager.getNameFileNotExt(fileName))
+        //                 listFile.forEach(async (file) => {
+        //                     if (this.#checkSupport(file)) {
+        //                         await sharp(isFolder + '/' + file).png({ "quality": 100 }).toFile(outDir + '/' + FileManager.getNameFileNotExt(file) + '.png');
+        //                     }
+        //                     // await rarZipManager.zip(folderOutputPath + '/' + FileManager.getNameFileNotExt(fileName), folderOutputPath + '/' + FileManager.getNameFileNotExt(fileName));
+        //                 });
+        //                 return { isFolder: true, path: outDir };
+        //             } else {
+        //                 const listFile = await FileManager.listOfFolder(folderInputPath);
+        //                 const dir = await FileManager.mkDir(folderOutputPath + '/img');
+        //                 const outFile = dir + '/' + FileManager.getNameFileNotExt(fileName) + '.png';
+        //                 listFile.forEach(async (file) => {
+        //                     if (this.#checkSupport(file)) {
+        //                         await sharp(folderInputPath + '/' + file).png({ "quality": 100 }).toFile(outFile);
+        //                     }
+        //                 });
+                        
+        //                 return { isFolder: false, path: outFile };
+        //             }
+        //         } else {
+        //         }
+        //     }
+
+        // } catch (err) {
+        //     console.log(err);
+        // }
     }
     async sendCompress(bot, chatId) {
         try {
@@ -76,13 +121,10 @@ export default class convertController {
         }
     }
     async sendFile(bot, chatId, fileFolderPath) {
-
         const fileName = fileFolderPath.path.split("/").pop();
         try {
             if (!fileFolderPath.isFolder) {
                 const fileSendStream = await FileManager.readStream(fileFolderPath.path);
-                // console.log(fileSendStream.ready);
-                console.log(fileSendStream.path);
                 const fileOptions = {
                     filename: fileName,
                     caption: `${fileName}`
