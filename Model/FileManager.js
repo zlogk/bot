@@ -133,11 +133,12 @@ export default class FileManager {
         }
     }
     static readStream(filePath) {
-        if (!this.exists(filePath)) return null;
+        const realPath = path.resolve(filePath);
+        if (!this.exists(realPath)) return null;
         return new Promise((resolve, reject) => {
-            const rs = fs.createReadStream(filePath);
+            const rs = fs.createReadStream(realPath);
             rs.on("open", () => {
-                resolve({ ready: true, path: filePath, stream: rs });
+                resolve({ ready: true, path: realPath, stream: rs });
             })
             rs.on("error", (err) => reject(err));
         })
