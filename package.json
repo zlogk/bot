@@ -15,6 +15,7 @@
     "sharp": "^0.34.5",
     "sqlite3": "^5.1.7",
     "systeminformation": "^5.27.10",
-    "unzipper": "^0.12.3"
+    "unzipper": "^0.12.3",
+    "yt-dlp-exec": "^1.0.2"
   }
 }

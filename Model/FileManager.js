@@ -126,19 +126,6 @@ export default class FileManager {
             })
             rs.on("error", () => reject({ ready: false, path: "", stream: undefined }));
         });
-        // return new Promise(async (resolve, reject) => {
-        //     const fileExist = await this.exists(filePath);
-        //     if (!fileExist) {
-        //         console.log("File không tồn tại: ", filePath);
-        //         reject(null);
-        //     }
-        //     const rs = fs.createReadStream(filePath);
-        //     rs.on("open", () => {
-        //         resolve({ ready: true, path: filePath, stream: rs });
-        //     })
-        //     rs.on("error", () => reject({ ready: false, path: "", stream: undefined }));
-
-        // });
     }
 
     //DELETE 
@@ -184,7 +171,6 @@ export default class FileManager {
     static getNameFileNotExt(name_path) {
         return path.basename(name_path, path.extname(name_path));
     }
-
 
 
 }

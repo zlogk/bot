@@ -1,6 +1,7 @@
 import TelegramBot from "node-telegram-bot-api";
 import RaspiBot from "./Bot/Raspi/raspiBot.js";
 import convertBot from "./Bot/convert-Img/convertBot.js";
+import downloadBot from "./Bot/download-video/downloadBot.js";
 import dotenv from 'dotenv';
 import fetch from "node-fetch";
 dotenv.config();
@@ -21,6 +22,8 @@ const Main = async () => {
         piInfo.Run();
         const convertImg = new convertBot(bot);
         convertImg.Run();
+        const ytDownload = new downloadBot(bot);
+        ytDownload.Run();
     }catch(err){
         console.log(err);
     }
