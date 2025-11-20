@@ -32,7 +32,7 @@ export default class downloadBot {
 
             } catch (err) {
                 console.log(err);
-                this.#bot.sendMessage(chatId, "Có lỗi khi download video.");
+                this.#bot.sendMessage(chatId, "Có lỗi khi download video." + err);
             }
         });
     }
